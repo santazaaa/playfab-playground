@@ -17,6 +17,7 @@ public class TestPlayfab : MonoBehaviour
 		Debug.Log("Start testing...");
 		yield return TestLogin();
 		yield return TestGetTitle();
+		yield return TestGetStatistic();
 		Debug.Log("Testing done!");
 	}
 
@@ -63,10 +64,39 @@ public class TestPlayfab : MonoBehaviour
 				{
 					Debug.LogFormat("Key = {0}, Value = {1}", keyVal.Key, keyVal.Value);
 				}
+				busy = false;
 			},
 			(error) =>
 			{
 				Debug.LogError("TestGetTitle error: " + error);
+			}
+		);
+
+		yield return new WaitWhile(() => busy);
+	}
+
+	private IEnumerator TestGetStatistic()
+	{
+		Debug.Log("[TestGetStatistic]");
+		var busy = true;
+
+		PlayFabClientAPI.GetPlayerStatistics(
+			new GetPlayerStatisticsRequest()
+			{
+				StatisticNames = null
+			},
+			(result) =>
+			{
+				Debug.Log("TestGetStatistic result: ");
+				foreach(var keyVal in result.Statistics)
+				{
+					Debug.LogFormat("Key = {0}, Value = {1}, Version = {2}", keyVal.StatisticName, keyVal.Value, keyVal.Version);
+				}
+				busy = false;
+			},
+			(error) =>
+			{
+				Debug.LogError("TestGetStatistic error: " + error);
 			}
 		);
 
