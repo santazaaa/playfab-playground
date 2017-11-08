@@ -18,6 +18,9 @@ public class TestPlayfab : MonoBehaviour
 		yield return TestLogin();
 		yield return TestGetTitle();
 		yield return TestGetStatistic();
+		yield return TestGetCatalogItems();
+		yield return TestPurchaseItem();
+		yield return TestGetUserInventory();
 		Debug.Log("Testing done!");
 	}
 
@@ -102,4 +105,88 @@ public class TestPlayfab : MonoBehaviour
 
 		yield return new WaitWhile(() => busy);
 	}
+
+	private IEnumerator TestGetCatalogItems()
+	{
+		Debug.Log("[TestGetCatalogItems]");
+		var busy = true;
+
+		PlayFabClientAPI.GetCatalogItems(
+			new GetCatalogItemsRequest()
+			{
+				CatalogVersion = null
+			},
+			(result) =>
+			{
+				Debug.Log("TestGetCatalogItems result: ");
+				foreach(var keyVal in result.Catalog)
+				{
+					Debug.LogFormat("Display name = {0}", keyVal.DisplayName);
+				}
+				busy = false;
+			},
+			(error) =>
+			{
+				Debug.LogError("TestGetCatalogItems error: " + error);
+			}
+		);
+
+		yield return new WaitWhile(() => busy);
+	}
+
+	private IEnumerator TestPurchaseItem()
+	{
+		Debug.Log("[TestPurchaseItem]");
+		var busy = true;
+
+		PlayFabClientAPI.PurchaseItem(
+			new PurchaseItemRequest()
+			{
+				CatalogVersion = null,
+				ItemId = "apple",
+				VirtualCurrency = "GO",
+				Price = 5
+			},
+			(result) =>
+			{
+				Debug.Log("TestPurchaseItem result: OK");
+				busy = false;
+			},
+			(error) =>
+			{
+				Debug.LogError("TestPurchaseItem error: " + error);
+			}
+		);
+
+		yield return new WaitWhile(() => busy);
+	}
+
+	private IEnumerator TestGetUserInventory()
+	{
+		Debug.Log("[TestGetUserInventory]");
+		var busy = true;
+
+		PlayFabClientAPI.GetUserInventory(
+			new GetUserInventoryRequest()
+			{
+
+			},
+			(result) =>
+			{
+				Debug.Log("TestGetUserInventory result: ");
+				foreach(var keyVal in result.Inventory)
+				{
+					Debug.LogFormat("Display name = {0}", keyVal.DisplayName);
+				}
+				busy = false;
+			},
+			(error) =>
+			{
+				Debug.LogError("TestGetUserInventory error: " + error);
+			}
+		);
+
+		yield return new WaitWhile(() => busy);
+	}
+
 }
