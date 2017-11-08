@@ -21,6 +21,7 @@ public class TestPlayfab : MonoBehaviour
 		yield return TestGetCatalogItems();
 		yield return TestPurchaseItem();
 		yield return TestGetUserInventory();
+		yield return TestExecuteCloudScript();
 		Debug.Log("Testing done!");
 	}
 
@@ -183,6 +184,35 @@ public class TestPlayfab : MonoBehaviour
 			(error) =>
 			{
 				Debug.LogError("TestGetUserInventory error: " + error);
+			}
+		);
+
+		yield return new WaitWhile(() => busy);
+	}
+
+	private IEnumerator TestExecuteCloudScript()
+	{
+		Debug.Log("[TestExecuteCloudScript]");
+		var busy = true;
+
+		PlayFabClientAPI.ExecuteCloudScript(
+			new ExecuteCloudScriptRequest()
+			{
+				FunctionName = "bushelOnYourFirstDay",
+				GeneratePlayStreamEvent = true
+			},
+			(result) =>
+			{
+				Debug.Log("TestExecuteCloudScript result: ");
+				foreach(var keyVal in result.Logs)
+				{
+					Debug.LogFormat("Message = {0}", keyVal.Message);
+				}
+				busy = false;
+			},
+			(error) =>
+			{
+				Debug.LogError("TestExecuteCloudScript error: " + error);
 			}
 		);
 
